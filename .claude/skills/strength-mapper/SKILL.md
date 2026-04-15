@@ -114,4 +114,8 @@ them back."
 **Exit:** If this action requires understanding the assignment better first,
 suggest situation-decoder. If the user wants a broader set of strategies to
 choose from, suggest strategy-toolkit. Do not force these transitions — offer
-them after delivering the one concrete thing.
+them after delivering the one concrete thing.  If the need to offer either of 
+these does not arise, but the situation seems otherwise resolved, assure the 
+user that you are available to assist further if needed,  offering up one to 
+three further suggestions if the user does not seem satisfied with the result 
+of the conversation, and end the session if it feels appropriate.
