@@ -417,6 +417,194 @@
       .bubble { max-width: 88%; }
       .crisis-banner { margin: 0 var(--space-4) var(--space-2); }
     }
+
+    /* ── Persona panel ─────────────────────────────────── */
+    .persona-tab {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: var(--space-4) var(--space-2);
+      border-radius: var(--radius-md) 0 0 var(--radius-md);
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      transition: background var(--transition), transform var(--transition);
+      user-select: none;
+    }
+    .persona-tab:hover { background: var(--color-primary-hover); }
+    .persona-tab.has-data {
+      background: var(--color-primary);
+      box-shadow: var(--shadow-md), 0 0 0 2px var(--color-primary-mid);
+    }
+    .persona-tab.has-data::after {
+      content: '✓';
+      writing-mode: horizontal-tb;
+      display: block;
+      text-align: center;
+      margin-top: var(--space-2);
+      font-size: 10px;
+    }
+
+    .persona-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: oklch(0.1 0 0 / 0.4);
+      z-index: 200;
+      animation: fadeIn 0.2s ease;
+    }
+    .persona-overlay.open { display: block; }
+
+    .persona-panel {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: min(420px, 100vw);
+      height: 100dvh;
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      box-shadow: var(--shadow-lg);
+      z-index: 300;
+      overflow-y: auto;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .persona-panel.open { right: 0; }
+
+    .persona-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-5) var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+      background: var(--color-surface-2);
+    }
+    .persona-panel-header h2 {
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .persona-panel-header p {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--space-1);
+      max-width: none;
+    }
+
+    .persona-panel-body {
+      padding: var(--space-5) var(--space-6);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .persona-field label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+    .persona-field .field-hint {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+      display: block;
+    }
+    .persona-field input[type="text"],
+    .persona-field input[type="number"],
+    .persona-field textarea {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface-2);
+      color: var(--color-text);
+      font-family: inherit;
+      font-size: var(--text-sm);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      resize: vertical;
+    }
+    .persona-field input:focus,
+    .persona-field textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 15%, transparent);
+    }
+    .persona-field input[type="number"] { max-width: 120px; }
+    .persona-field textarea { min-height: 72px; }
+
+    .conditions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+    .condition-check {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+    .condition-check input {
+      accent-color: var(--color-primary);
+      width: 15px; height: 15px;
+      flex-shrink: 0;
+    }
+    .condition-check:has(input:checked) {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary-mid);
+      color: var(--color-text);
+    }
+
+    .persona-panel-footer {
+      padding: var(--space-4) var(--space-6);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      gap: var(--space-3);
+      flex-shrink: 0;
+      background: var(--color-surface-2);
+    }
+    .btn-save-persona {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      transition: background var(--transition);
+    }
+    .btn-save-persona:hover { background: var(--color-primary-hover); }
+    .btn-skip-persona {
+      padding: var(--space-3) var(--space-4);
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--color-border);
+    }
+    .btn-skip-persona:hover { background: var(--color-divider); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .persona-panel { transition: none; }
+      .persona-overlay { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -528,6 +716,129 @@
     </div>
     <p class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</p>
   </footer>
+
+  <!-- Persona tab trigger -->
+  <button class="persona-tab" id="persona-tab"
+          aria-label="Open profile panel" aria-expanded="false">
+    About Me
+  </button>
+
+  <!-- Overlay -->
+  <div class="persona-overlay" id="persona-overlay"
+       role="dialog" aria-modal="true" aria-labelledby="persona-panel-title">
+  </div>
+
+  <!-- Slide-out panel -->
+  <aside class="persona-panel" id="persona-panel">
+    <div class="persona-panel-header">
+      <div>
+        <h2 id="persona-panel-title">About You</h2>
+        <p>This helps the coach give you more relevant support.
+           Everything is optional and stays in your browser.</p>
+      </div>
+      <button class="btn-icon" id="persona-close" aria-label="Close panel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="persona-panel-body">
+
+      <div class="persona-field">
+        <label for="persona-name">First name or nickname</label>
+        <input type="text" id="persona-name" placeholder="Optional"
+               autocomplete="off" />
+      </div>
+
+      <div class="persona-field">
+        <label for="persona-age">Age</label>
+        <input type="number" id="persona-age" placeholder="Optional"
+               min="14" max="99" />
+      </div>
+
+      <div class="persona-field">
+        <label>What applies to you? <span class="field-hint">
+          Select all that apply, or skip entirely.</span></label>
+        <div class="conditions-grid">
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="ADHD" /> ADHD
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="Autism / ASD" /> Autism / ASD
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="Dyslexia" /> Dyslexia
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="Dyscalculia" /> Dyscalculia
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="Anxiety" /> Anxiety
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="Depression" /> Depression
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="OCD" /> OCD
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="PTSD" /> PTSD
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="Sensory Processing" /> Sensory Processing
+          </label>
+          <label class="condition-check">
+            <input type="checkbox" name="condition" value="Other" /> Other
+          </label>
+        </div>
+        <input type="text" id="condition-other"
+               placeholder="Describe if you selected Other…"
+               style="margin-top: var(--space-2);" />
+      </div>
+
+      <div class="persona-field">
+        <label for="persona-backstory">A bit about your situation</label>
+        <span class="field-hint">Year, major, what your schedule is
+          like — whatever feels relevant.</span>
+        <textarea id="persona-backstory"
+                  placeholder="e.g. Junior in nursing, works two jobs,
+                               chronically behind on readings…"></textarea>
+      </div>
+
+      <div class="persona-field">
+        <label for="persona-triggers">Things that tend to stress you out</label>
+        <span class="field-hint">Situations, assignment types, or moments
+          that make things harder.</span>
+        <textarea id="persona-triggers"
+                  placeholder="e.g. Vague instructions, group projects,
+                               not knowing where to start…"></textarea>
+      </div>
+
+      <div class="persona-field">
+        <label for="persona-strengths">What you're good at or how you work best</label>
+        <span class="field-hint">Even partial self-knowledge helps a lot.</span>
+        <textarea id="persona-strengths"
+                  placeholder="e.g. Hyperfocus when interested,
+                               strong verbal communicator…"></textarea>
+      </div>
+
+      <div class="persona-field">
+        <label for="persona-success">What would actually help today</label>
+        <span class="field-hint">What does a good outcome look like for you?</span>
+        <textarea id="persona-success"
+                  placeholder="e.g. One concrete thing to do,
+                               not a five-step plan…"></textarea>
+      </div>
+
+    </div><!-- end body -->
+
+    <div class="persona-panel-footer">
+      <button class="btn-save-persona" id="btn-save-persona">Save profile</button>
+      <button class="btn-skip-persona" id="btn-skip-persona">Skip</button>
+    </div>
+  </aside>
 
 </div>
 
@@ -659,7 +970,7 @@
       const res = await fetch('/chat', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({message: text, session_id: sessionId}),
+        body: _buildBody(text),
       });
       const data = await res.json();
 
@@ -736,6 +1047,91 @@
 
   // ── Focus input on load ────────────────────────────────────────────────────
   input.focus();
+
+  // ── Persona panel ──────────────────────────────────────────────────────
+  let personaData = null;
+  let personaSentForSession = false;
+
+  const personaTab     = document.getElementById('persona-tab');
+  const personaOverlay = document.getElementById('persona-overlay');
+  const personaPanel   = document.getElementById('persona-panel');
+  const personaClose   = document.getElementById('persona-close');
+  const btnSavePersona = document.getElementById('btn-save-persona');
+  const btnSkipPersona = document.getElementById('btn-skip-persona');
+
+  function openPersonaPanel() {
+    personaPanel.classList.add('open');
+    personaOverlay.classList.add('open');
+    personaTab.setAttribute('aria-expanded', 'true');
+    personaClose.focus();
+  }
+  function closePersonaPanel() {
+    personaPanel.classList.remove('open');
+    personaOverlay.classList.remove('open');
+    personaTab.setAttribute('aria-expanded', 'false');
+    personaTab.focus();
+  }
+
+  personaTab.addEventListener('click', openPersonaPanel);
+  personaClose.addEventListener('click', closePersonaPanel);
+  personaOverlay.addEventListener('click', closePersonaPanel);
+  btnSkipPersona.addEventListener('click', () => {
+    personaData = null;
+    closePersonaPanel();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && personaPanel.classList.contains('open')) {
+      closePersonaPanel();
+    }
+  });
+
+  btnSavePersona.addEventListener('click', () => {
+    const name = document.getElementById('persona-name').value.trim();
+    const age  = document.getElementById('persona-age').value.trim();
+    const conditions = Array.from(
+      document.querySelectorAll('input[name="condition"]:checked')
+    ).map(cb => cb.value);
+    const otherCondition = document.getElementById('condition-other').value.trim();
+    if (otherCondition && conditions.includes('Other')) {
+      const idx = conditions.indexOf('Other');
+      conditions[idx] = otherCondition;
+    }
+    const backstory  = document.getElementById('persona-backstory').value.trim();
+    const triggers   = document.getElementById('persona-triggers').value.trim();
+    const strengths  = document.getElementById('persona-strengths').value.trim();
+    const success    = document.getElementById('persona-success').value.trim();
+
+    personaData = {};
+    if (name)       personaData.name = name;
+    if (age)        personaData.age  = parseInt(age, 10);
+    if (conditions.length) personaData.conditions = conditions;
+    if (backstory)  personaData.backstory = backstory;
+    if (triggers)   personaData.emotional_triggers = triggers;
+    if (strengths)  personaData.existing_strengths = strengths;
+    if (success)    personaData.what_success_looks_like = success;
+
+    personaTab.classList.add('has-data');
+    closePersonaPanel();
+  });
+
+  // Reset persona-sent flag when new session starts
+  btnNew.addEventListener('click', () => {
+    personaSentForSession = false;
+    // has-data indicator stays — persona persists across sessions
+  });
+
+  // Builds the /chat fetch body, attaching persona on first message of session
+  function _buildBody(text) {
+    const body = { message: text, session_id: sessionId };
+    if (!personaSentForSession && personaData) {
+      body.persona = personaData;
+      personaSentForSession = true;
+    }
+    return JSON.stringify(body);
+  }
+  // Expose so sendMessage's fetch call (already patched) can find it
+  window._buildBody = _buildBody;
 })();
 </script>
 </body>

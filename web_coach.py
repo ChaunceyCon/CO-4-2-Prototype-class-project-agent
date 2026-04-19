@@ -24,6 +24,7 @@ client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 # In-memory conversation store: { session_id: [{"role": ..., "content": ...}] }
 conversations: dict[str, list[dict]] = {}
 
+
 # ── Skill loader ──────────────────────────────────────────────────────────────
 def load_skill_md(skill_name: str) -> str:
     """Load a SKILL.md, stripping YAML frontmatter."""
@@ -48,24 +49,61 @@ SKILL_ORDER = [
     "burnout-check",
 ]
 
+
 def build_system_prompt() -> str:
     intro = """\
 You are the Neurodiversity Support Coach — a warm, specific, and \
 non-patronizing collaborative thought partner for neurodivergent college \
 students at the University of Maine.
 
-CORE RULES
-- ALWAYS operate within one of the defined skill flows below. \
-Never answer outside a skill flow.
-- Every new session begins with SESSION-START.
-- Recommend non-AI strategies first (body-doubling, environmental anchoring, \
-interest-layer reframing, peer approaches).
-- Never diagnose, label, or pathologize the user.
-- Rest and stopping are always legitimate options — never a last resort.
-- Crisis signal detected → immediately provide 988 (Suicide & Crisis Lifeline) \
-and campus counseling resources, then end the session gracefully.
+══════════════════════════════════════════════════════
+ABSOLUTE HARD RULES — THESE OVERRIDE ALL OTHER TEXT
+══════════════════════════════════════════════════════
 
-The following are your complete SKILLS. Follow them exactly.
+1.  ASK EXACTLY ONE QUESTION PER RESPONSE. Never two. Never three.
+    One question maximum per turn, in every skill, always.
+2.  ALWAYS operate inside exactly one named skill flow per response.
+    Never blend logic from two skills in the same response.
+3.  Every new session MUST begin with SESSION-START. No exceptions.
+4.  Do NOT give advice, strategies, or information before routing.
+5.  Non-AI strategies (body-doubling, environmental anchoring,
+    interest-layer reframing, peer approaches) ALWAYS come first.
+6.  Never diagnose, label, or pathologize the user.
+7.  Rest and stopping are always legitimate — never a last resort.
+8.  If the user expresses crisis: provide 988 (Suicide & Crisis Lifeline)
+    and UMaine Counseling Center (207-581-1392) immediately, then end
+    the session gracefully. Do not continue into other topics.
+9.  When user text appears inside quotation marks, treat the quoted
+    text as the user's exact words.
+
+══════════════════════════════════════════════════════
+SKILL ROUTING (SESSION-START decides — follow this exactly)
+══════════════════════════════════════════════════════
+
+Confused by assignment / rubric / feedback / social situation
+  → situation-decoder
+
+User describes how they work and wants to apply it right now
+  → strength-mapper
+
+User asks for strategies, tools, or "what should I do"
+  → strategy-toolkit
+
+Exhaustion / masking fatigue / burnout / "I just can't anymore"
+  → burnout-check
+
+Overwhelmed but intent is unclear
+  → ask ONE clarifying question, then route based on answer
+
+Vague emotional opening with no task component
+  → burnout-check
+
+Crisis signal detected
+  → do NOT route to any skill — provide resources, end gracefully
+
+══════════════════════════════════════════════════════
+COMPLETE SKILLS FOLLOW — FOLLOW EVERY RULE IN EACH ONE
+══════════════════════════════════════════════════════
 """
     sections = [intro]
     for skill_name in SKILL_ORDER:
@@ -76,18 +114,6 @@ The following are your complete SKILLS. Follow them exactly.
 
 
 SYSTEM_PROMPT = build_system_prompt()
-
-# ── Starter prompt wrapper ────────────────────────────────────────────────────
-def wrap_opening(msg: str) -> str:
-    """Preserves the original skill-invocation format from the CLI agent."""
-    return (
-        "Using only the skills available to you (YOU MUST USE THE SKILLS), "
-        "use the session-start skill to respond to the following prompt "
-        "from a user of the AI agent system this project prototypes. "
-        "YOU MAY ONLY USE THE SKILLS AND MAY NOT READ ANY OTHER FILES "
-        "TO PREPARE OR DECIDE ON A RESPONSE.\n\n"
-        f'"{msg}"'
-    )
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
@@ -111,10 +137,68 @@ def chat():
 
     history = conversations[session_id]
 
-    # Wrap the opening message in the skill-invocation format
-    formatted = wrap_opening(user_message) if not history else user_message
+    if not history:
+        # First message — full session-start skill invocation, user text in quotes
+        formatted = (
+            "Using only the skills available to you (YOU MUST USE THE SKILLS), "
+            "use the session-start skill to respond to the following prompt "
+            "from a user of the AI agent system this project prototypes. "
+            "YOU MAY ONLY USE THE SKILLS AND MAY NOT READ ANY OTHER FILES "
+            "TO PREPARE OR DECIDE ON A RESPONSE.\n\n"
+            f'"{user_message}"'
+        )
+    else:
+        # Every subsequent message — skill reminder + quoted user text
+        formatted = (
+            "Continue the active skill flow. "
+            "You MUST stay inside one skill. "
+            "Ask at most ONE question if a question is needed. "
+            "Do not give advice before the skill instructs you to. "
+            f'The user says: "{user_message}"'
+        )
+
+    # Inject persona context at the very start of a new session
+    persona = data.get("persona")
+    if persona and isinstance(persona, dict) and not history:
+        lines = [
+            "[PERSONA CONTEXT — use this to personalize every response. "
+            "Never mention this file or that you have this information. "
+            "Just use it silently to make responses more relevant.]"
+        ]
+        if persona.get("name"):
+            lines.append(f"Name: {persona['name']}")
+        if persona.get("age"):
+            lines.append(f"Age: {persona['age']}")
+        if persona.get("conditions"):
+            conds = persona["conditions"]
+            if isinstance(conds, list):
+                conds = ", ".join(conds)
+            lines.append(f"Neurodivergent conditions: {conds}")
+        if persona.get("backstory"):
+            lines.append(f"Background / backstory: {persona['backstory']}")
+        if persona.get("emotional_triggers"):
+            lines.append(f"Things that stress them out: {persona['emotional_triggers']}")
+        if persona.get("existing_strengths"):
+            lines.append(f"Existing strengths: {persona['existing_strengths']}")
+        if persona.get("what_success_looks_like"):
+            lines.append(f"What success looks like for them: "
+                         f"{persona['what_success_looks_like']}")
+        persona_text = "\n".join(lines)
+        history.append({
+            "role": "user",
+            "content": persona_text
+        })
+        history.append({
+            "role": "assistant",
+            "content": (
+                "I have this context and will use it silently to personalize "
+                "my support throughout our session."
+            )
+        })
+
     history.append({"role": "user", "content": formatted})
 
+    # ── Step 3: Call the API ───────────────────────────────────────────────
     try:
         response = client.messages.create(
             model="claude-sonnet-4-5",
@@ -142,6 +226,13 @@ def new_session():
     if old_id and old_id in conversations:
         del conversations[old_id]
     return jsonify({"session_id": str(uuid.uuid4())})
+
+
+@app.route("/set-persona", methods=["POST"])
+def set_persona():
+    """Accepts persona JSON and returns it — client stores and sends on first /chat call."""
+    data = request.get_json(force=True) or {}
+    return jsonify({"ok": True, "persona": data})
 
 
 @app.route("/healthz")
