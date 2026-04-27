@@ -3,7 +3,7 @@
   "checkpoint_id": "ad41df511689",
   "strategy": "manual-commit",
   "branch": "Export-Chat",
-  "checkpoints_count": 2,
+  "checkpoints_count": 14,
   "files_touched": [
     "templates/index.html"
   ],
@@ -13,13 +13,19 @@
       "transcript": "/ad/41df511689/0/full.jsonl",
       "content_hash": "/ad/41df511689/0/content_hash.txt",
       "prompt": "/ad/41df511689/0/prompt.txt"
+    },
+    {
+      "metadata": "/ad/41df511689/1/metadata.json",
+      "transcript": "/ad/41df511689/1/full.jsonl",
+      "content_hash": "/ad/41df511689/1/content_hash.txt",
+      "prompt": "/ad/41df511689/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 30,
-    "cache_creation_tokens": 33905,
-    "cache_read_tokens": 883385,
-    "output_tokens": 13462,
-    "api_call_count": 24
+    "input_tokens": 120,
+    "cache_creation_tokens": 83436,
+    "cache_read_tokens": 2142746,
+    "output_tokens": 40906,
+    "api_call_count": 54
   }
 }
