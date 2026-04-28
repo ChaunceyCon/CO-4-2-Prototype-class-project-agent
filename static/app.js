@@ -11,6 +11,7 @@
   const input         = document.getElementById('message-input');
   const btnSend       = document.getElementById('btn-send');
   const btnNew        = document.getElementById('btn-new-session');
+  const btnExport     = document.getElementById('btn-export');
   const themeToggle   = document.getElementById('theme-toggle');
   const crisisBanner  = document.getElementById('crisis-banner');
   const html          = document.documentElement;
@@ -58,6 +59,7 @@
   });
 
   btnSend.addEventListener('click', sendMessage);
+  btnExport.addEventListener('click', exportToPDF);
 
   // ── Starter buttons ────────────────────────────────────────────────────────
   document.querySelectorAll('.starter-btn').forEach(btn => {
@@ -201,6 +203,90 @@
   // ── Scroll ─────────────────────────────────────────────────────────────────
   function scrollToBottom() {
     chatArea.scrollTo({top: chatArea.scrollHeight, behavior: 'smooth'});
+  }
+
+   // Export chat as PDF via the browser's print dialog ("Save as PDF").
+  function exportToPDF() {
+    const rows = Array.from(chatArea.querySelectorAll('.message-row:not(.typing-row)'));
+    if (rows.length === 0) {
+      alert('Start a conversation first, there is nothing to export yet.');
+      return;
+    }
+
+    const escapeHTML = s => s.replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    });
+
+    const messages = rows.map(row => {
+      const isUser = row.classList.contains('user');
+      const text = row.querySelector('.bubble')?.textContent.trim();
+      if (!text) return '';
+      return `
+        <section class="msg ${isUser ? 'user' : 'coach'}">
+          <div class="who">${isUser ? 'YOU' : 'COACH'}</div>
+          <div class="text">${escapeHTML(text)}</div>
+        </section>`;
+    }).join('');
+
+    const fileTitle = `coach-session-${new Date().toISOString().slice(0, 10)}`;
+
+    const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>${fileTitle}</title>
+  <style>
+    @page { size: letter; margin: 20mm; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #2a2722;
+      margin: 0;
+      padding: 24px;
+      line-height: 1.5;
+    }
+    header     { border-bottom: 1px solid #dcdad4; padding-bottom: 10px; margin-bottom: 18px; }
+    h1         { font-size: 18px; color: #3d8b7a; margin: 0 0 4px 0; }
+    .date      { font-size: 11px; color: #7a7670; }
+    .msg       { padding: 8px 0; border-bottom: 1px solid #eeece7; page-break-inside: avoid; }
+    .msg:last-child { border-bottom: none; }
+    .who       { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .msg.user  .who { color: #3d8b7a; }
+    .msg.coach .who { color: #645f5a; }
+    .text      { font-size: 11.5px; white-space: pre-wrap; word-wrap: break-word; }
+    footer     { margin-top: 24px; padding-top: 10px; border-top: 1px solid #dcdad4;
+                 font-size: 9px; color: #b4b1ad; text-align: center; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Neurodiversity Support Coach</h1>
+    <div class="date">${dateStr}</div>
+  </header>
+  <main>${messages}</main>
+  <footer>Neurodiversity Support Coach</footer>
+  <script>
+    window.addEventListener('load', () => {
+      window.focus();
+      window.print();
+      window.addEventListener('afterprint', () => window.close());
+    });
+  <\/script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (!win) {
+      alert('Please allow pop-ups to export the chat.');
+      return;
+    }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
   }
 
   // ── Focus input on load ────────────────────────────────────────────────────
