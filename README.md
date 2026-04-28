@@ -15,45 +15,102 @@ The agent acts as a collaborative thought partner — warm, specific, and non-pa
 
 ***
 
-## Web Version
+## Hosted Version (No Setup Required)
 
 - Access the web version of the Agent at https://co-4-2-prototype-class-project-agent-production.up.railway.app/
 - If you wish to run the agent on your own device instead, continue below.
 
 ## Prerequisites
 
-- VS Code with the Claude Code extension installed and authenticated
-- An Anthropic API key or Claude Max subscription
-- This repository cloned locally and opened in VS Code
-- Entire CLI enabled (`entire enable` from the repo root in WSL/terminal)
-
-***
-
-## Setup
+- Python 3.10 or higher
+- An Anthropic API key ([get one here](https://console.anthropic.com/))
+- This repository cloned locally
 
 ```bash
-# Clone the repository
 git clone https://github.com/ChaunceyCon/CO-4-2-Prototype-class-project-agent.git
 cd CO-4-2-Prototype-class-project-agent
-
-# Enable Entire (requires WSL or Linux terminal)
-entire enable
-
-# Start Claude Code
-claude
 ```
 
 ***
 
-## How to Run the Agent
+## Option 1 — Web Chat Interface (Flask)
 
-### Step 1: Start a fresh Claude Code session
+The web interface runs in your browser at `localhost:5000`.
 
-Open a new terminal session and run:
+Install dependencies:
 
 ```bash
+pip install flask anthropic
+```
+
+Set your API key:
+
+```bash
+export ANTHROPIC_API_KEY=your-key-here
+```
+
+Start the server:
+
+```bash
+python web_coach.py
+```
+
+Open in browser:
+
+```
+http://localhost:5000/
+```
+
+Use the **About Me** panel (tab on the right side) to enter your name, age, neurodivergent conditions, and background before starting a chat. This lets the coach personalize responses to your situation. Fill it out and click **Save profile** before sending your first message.
+
+***
+
+## Option 2 — Claude Agent SDK (Terminal/CLI)
+
+The CLI version runs directly in your terminal using the Claude Agent SDK.
+
+Install the SDK (Claude Code CLI is bundled automatically — no separate install needed):
+
+```bash
+pip install claude-agent-sdk anthropic
+```
+
+Set your API key:
+
+```bash
+export ANTHROPIC_API_KEY=your-key-here
+```
+
+Run the coach:
+
+```bash
+python coach.py
+```
+
+You will be prompted to type your opening message. The agent reads your `.claude/skills/` files and routes to the right skill automatically.
+
+Example opening messages:
+
+```
+What's on your mind? → I have a paper due tomorrow and I keep reading the
+prompt but I do not understand what the professor actually wants from me.
+
+What's on your mind? → I am so tired. I have been pushing through everything
+for weeks and I do not know how much longer I can keep doing this.
+```
+
+Type `exit` at any point to end the session.
+
+***
+
+## Option 3 — Original Claude Code Terminal
+
+```bash
+# From the repo root in WSL/terminal
 claude
 ```
+
+### Step 1: Start a fresh Claude Code session
 
 Make sure **Superpowers plugin is disabled** if you have it installed. Run `/plugin` inside Claude Code and verify it is toggled off. If superpowers is active, it will intercept the skills and the agent will not work correctly.
 
@@ -75,9 +132,7 @@ TO PREPARE OR DECIDE ON A RESPONSE.
 
 After the agent responds, keep replying as yourself. The agent will route between skills automatically based on what you need.
 
-***
-
-## Example Opening Prompts
+### Example Opening Prompts
 
 Try one of these to get started, or write your own:
 
