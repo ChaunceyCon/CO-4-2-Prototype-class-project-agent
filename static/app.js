@@ -174,8 +174,49 @@
     row.appendChild(avatar);
     row.appendChild(bubble);
     chatArea.appendChild(row);
+    if (role === 'coach') showFeedbackBar();
     scrollToBottom();
   }
+
+  // ── Feedback bar logic ─────────────────────────────────────────────────────
+  const feedbackBar = document.getElementById('feedback-bar');
+  const feedbackSkip = document.getElementById('feedback-skip');
+  const starBtns = document.querySelectorAll('.star-btn');
+  let currentRating = null;
+
+  function showFeedbackBar() {
+    currentRating = null;
+    starBtns.forEach(b => b.classList.remove('active'));
+    feedbackBar.style.display = 'flex';
+  }
+
+  function hideFeedbackBar() {
+    feedbackBar.style.display = 'none';
+  }
+
+  function submitFeedback(rating) {
+    hideFeedbackBar();
+    fetch('/feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        session_id: sessionId,
+        rating: String(rating),
+        helpful: rating >= 4 ? 'yes' : rating >= 2 ? 'maybe' : 'no',
+        comments: ''
+      })
+    }).catch(() => {}); // silent fail — feedback is non-critical
+  }
+
+  starBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = parseInt(btn.dataset.val);
+      starBtns.forEach((b, i) => b.classList.toggle('active', i < val));
+      submitFeedback(val);
+    });
+  });
+
+  feedbackSkip.addEventListener('click', hideFeedbackBar);
 
   // ── Typing indicator ───────────────────────────────────────────────────────
   function showTyping() {
