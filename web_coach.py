@@ -15,14 +15,62 @@ from pathlib import Path
 from flask import Flask, jsonify, render_template, request
 
 import anthropic
+import csv
+from datetime import datetime, timezone
+from flask import send_file
 
 # ── App setup ─────────────────────────────────────────────────────────────────
 app = Flask(__name__)
 REPO_ROOT = Path(__file__).parent
+
+# Use Railway Volume if available, otherwise fall back to local ./data
+DATA_DIR = Path(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH", str(REPO_ROOT / "data")))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+CSV_CONVERSATIONS = DATA_DIR / "conversations.csv"
+CSV_FEEDBACK      = DATA_DIR / "feedback.csv"
+
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 # In-memory conversation store: { session_id: [{"role": ..., "content": ...}] }
 conversations: dict[str, list[dict]] = {}
+
+
+# ── CSV logging ───────────────────────────────────────────────────────────────
+def _append_row(path: Path, fields: list, row: dict):
+    """Append one row to a CSV, writing the header if the file is new."""
+    try:
+        write_header = not path.exists() or path.stat().st_size == 0
+        with path.open("a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fields)
+            if write_header:
+                writer.writeheader()
+            writer.writerow(row)
+    except Exception as exc:
+        print(f"[LOG ERROR] {exc}", flush=True)
+
+
+FIELDS_CONVERSATIONS = ["timestamp", "session_id", "role", "content"]
+
+def collect_conversation(session_id: str, role: str, content: str) -> dict:
+    return {
+        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        "session_id": session_id,
+        "role": role,
+        "content": content,
+    }
+
+FIELDS_FEEDBACK = ["timestamp", "session_id", "rating", "helpful", "comments"]
+
+def collect_feedback(session_id: str, rating: str,
+                     helpful: str, comments: str) -> dict:
+    return {
+        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        "session_id": session_id,
+        "rating": rating,
+        "helpful": helpful,
+        "comments": comments,
+    }
 
 
 # ── Skill loader ──────────────────────────────────────────────────────────────
@@ -254,6 +302,11 @@ def chat():
     if len(history) > 40:
         conversations[session_id] = history[-40:]
 
+    _append_row(CSV_CONVERSATIONS, FIELDS_CONVERSATIONS,
+                collect_conversation(session_id, "user", user_message))
+    _append_row(CSV_CONVERSATIONS, FIELDS_CONVERSATIONS,
+                collect_conversation(session_id, "assistant", reply))
+
     return jsonify({"response": reply, "session_id": session_id})
 
 
@@ -271,6 +324,42 @@ def set_persona():
     """Accepts persona JSON and returns it — client stores and sends on first /chat call."""
     data = request.get_json(force=True) or {}
     return jsonify({"ok": True, "persona": data})
+
+
+@app.route("/feedback", methods=["POST"])
+def feedback():
+    try:
+        data = request.get_json(force=True) or {}
+        session_id = data.get("session_id", "")
+        rating = data.get("rating", "")
+        helpful = data.get("helpful", "")
+        comments = data.get("comments", "")
+        _append_row(CSV_FEEDBACK, FIELDS_FEEDBACK,
+                    collect_feedback(session_id, rating, helpful, comments))
+        return jsonify({"ok": True})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+def _serve_csv(path: Path, filename: str):
+    key = request.args.get("key", "")
+    expected = os.environ.get("LOG_KEY", "")
+    if not expected or key != expected:
+        return "Access denied", 403
+    if not path.exists():
+        return "No logs yet.", 404
+    return send_file(path, as_attachment=True,
+                     download_name=filename, mimetype="text/csv")
+
+
+@app.route("/download-conversations")
+def download_conversations():
+    return _serve_csv(CSV_CONVERSATIONS, "conversations.csv")
+
+
+@app.route("/download-feedback")
+def download_feedback():
+    return _serve_csv(CSV_FEEDBACK, "feedback.csv")
 
 
 @app.route("/healthz")

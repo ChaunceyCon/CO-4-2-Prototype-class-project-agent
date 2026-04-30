@@ -257,6 +257,33 @@
       .intro-content { padding: var(--space-4); }
       .intro-footer { padding: var(--space-3) var(--space-4); }
     }
+    .feedback-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-6);
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+      flex-shrink: 0;
+    }
+    .feedback-label { color: var(--color-text-muted); }
+    .star-btn {
+      font-size: 1.2rem;
+      color: var(--color-text-faint);
+      padding: var(--space-1);
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), transform var(--transition);
+    }
+    .star-btn:hover, .star-btn.active { color: var(--color-gold, #d19900); }
+    .star-btn:active { transform: scale(0.9); }
+    .feedback-skip {
+      font-size: var(--text-xs);
+      color: var(--color-text-faint);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+    .feedback-skip:hover { color: var(--color-text-muted); }
   </style>
 </head>
 <body>
@@ -368,6 +395,20 @@
     </div>
 
   </main>
+
+  <div id="feedback-bar" class="feedback-bar" aria-live="polite"
+       style="display:none">
+    <span class="feedback-label">Was this helpful?</span>
+    <div class="feedback-stars" role="group" aria-label="Rate this response">
+      <button class="star-btn" data-val="1" aria-label="1 star">★</button>
+      <button class="star-btn" data-val="2" aria-label="2 stars">★</button>
+      <button class="star-btn" data-val="3" aria-label="3 stars">★</button>
+      <button class="star-btn" data-val="4" aria-label="4 stars">★</button>
+      <button class="star-btn" data-val="5" aria-label="5 stars">★</button>
+    </div>
+    <button id="feedback-skip" class="feedback-skip"
+            aria-label="Skip feedback">Skip</button>
+  </div>
 
   <!-- Input area -->
   <footer class="input-area" role="contentinfo">
