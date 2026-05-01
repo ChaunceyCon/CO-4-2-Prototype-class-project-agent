@@ -1,0 +1,63 @@
+{
+  "cli_version": "0.5.2",
+  "checkpoint_id": "ecb90820b1d2",
+  "session_id": "32acb309-1a01-4739-89fb-91ee5c1ce722",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-01T20:47:26.3249077Z",
+  "branch": "judge-and-messages",
+  "checkpoints_count": 36,
+  "files_touched": [
+    ".gitignore",
+    "eval/README.md",
+    "eval/__pycache__/evaluate.cpython-312.pyc",
+    "eval/__pycache__/evaluate.cpython-314.pyc",
+    "eval/__pycache__/metrics.cpython-312.pyc",
+    "eval/__pycache__/metrics.cpython-314.pyc",
+    "eval/__pycache__/rubrics.cpython-312.pyc",
+    "eval/__pycache__/rubrics.cpython-314.pyc",
+    "eval/conversations.json",
+    "eval/evaluate.py",
+    "eval/judges/context_questions_judge.py",
+    "eval/judges/length_tally.py",
+    "eval/judges/mode_detection_judge.py",
+    "eval/llm_client.py",
+    "eval/metrics.py",
+    "eval/requirements.txt",
+    "eval/results/result-beneficial-01-maya.json",
+    "eval/results/result-experiment-chauncey-test-1.json",
+    "eval/results/result-experiment-chauncey-test-2.json",
+    "eval/results/result-experiment-maya-1.json",
+    "eval/results/result-experiment-maya-test-1.json",
+    "eval/results/result-unhelpful-01-preachy.json",
+    "eval/results/result-unhelpful-02-dismissive.json",
+    "eval/results/summary-20260331-153100.json",
+    "eval/results/summary-20260405-034027.json",
+    "eval/results/summary-20260405-034106.json",
+    "eval/rubrics.py",
+    "eval/run_eval.py",
+    "eval/sample_conversations.json",
+    "eval/transcripts.py"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "a0b611711ec4",
+  "token_usage": {
+    "input_tokens": 274,
+    "cache_creation_tokens": 217166,
+    "cache_read_tokens": 12577120,
+    "output_tokens": 114943,
+    "api_call_count": 84
+  },
+  "session_metrics": {
+    "turn_count": 36
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-01T20:47:25.2861032Z",
+    "agent_lines": 0,
+    "human_added": 195,
+    "human_modified": 1923,
+    "human_removed": 0,
+    "total_committed": 195,
+    "agent_percentage": 0
+  }
+}

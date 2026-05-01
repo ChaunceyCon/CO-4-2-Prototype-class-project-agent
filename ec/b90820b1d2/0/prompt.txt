@@ -1,0 +1,145 @@
+what do i have to do to integrate a foundation for a judge, without actually putting in the metrics yet, based on whats in judgeinfo.pdf
+
+---
+
+judge over saved transcripts, draft the scaffolding
+
+---
+
+where will you be writing
+
+---
+
+will the judge be an agent seperate from the main agent?
+
+---
+
+yes
+
+---
+
+the conversations are not saved to a json
+
+---
+
+no, those interactions are not the ones to be read
+
+---
+
+i have put the conversations.csv in there now
+
+---
+
+ok
+
+---
+
+what summary was written and where
+
+---
+
+yes
+
+---
+
+is the judge an agent? why is it formatted so much differently than the main agent? will it have skills? whats noted for how it should be set up in the pdf?
+
+---
+
+when pdf says llm as a judge, doesnt that meant hat the judge should be an agent?
+
+---
+
+ok. can we start setting up some of the actual judge stuff now? like 1. tally response length of user and agent, as well as how many there are, 2.  Detection Judge for user mode that log how long it takes the agent to get to the mode the user is in, 3. Log how many questions the agent asked to get user context, 4. Log how many questions the agent asked to get  task context.
+
+---
+
+mode = emotional state, one judge for 3 +4, and yes you are right about definitions i believe
+
+---
+
+ok. but dont write outside of the eval folder without letting me know
+
+---
+
+can we continue without it or woudl that not work
+
+---
+
+i have put it in .env
+
+---
+
+ok
+
+---
+
+wait, does the main agent have a dotenv loader or just this? if the main agent doesnt, undo
+
+---
+
+do you think the prompt in altjudge.txt would be better than what weve already establisehd
+
+---
+
+will this ensureall ideas in the altjudge.txt, interms of what the judge gathers, are included in our judge?
+
+---
+
+do what seems best
+
+---
+
+ok
+
+---
+
+can we do that
+
+---
+
+python -m eval.run_eval --judges mode_detection_latency context_questions
+
+---
+
+so, is everything working fully?
+
+---
+
+is stub_judge needed anyomre
+
+---
+
+ok
+
+---
+
+is the stuff in pycache needed or shoudl that be gitignored or what
+
+---
+
+edit root gitignore
+
+---
+
+currently, how would one run the judge? is it explained in the readme?
+
+---
+
+can we move the judges into a subfolder
+
+---
+
+why do we net a new init
+
+---
+
+b
+
+---
+
+is the readme for eval clear about how to run the evaluations and what the outputs actually mean?
+
+---
+
+yes
