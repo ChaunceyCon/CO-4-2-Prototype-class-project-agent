@@ -664,3 +664,32 @@ a, button { transition: color var(--transition), background var(--transition),
 @media (prefers-reduced-motion: reduce) {
   .persona-prompt { animation: none; }
 }
+
+/* ── Study / data-collection notice (under header) ──────── */
+.study-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-mid);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  margin: var(--space-3) var(--space-6) 0;
+  box-shadow: var(--shadow-sm);
+}
+.study-notice-icon {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: var(--text-base);
+  line-height: 1;
+}
+.study-notice p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+@media (max-width: 600px) {
+  .study-notice { margin: var(--space-3) var(--space-4) 0; }
+}
