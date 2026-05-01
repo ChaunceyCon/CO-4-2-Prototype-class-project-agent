@@ -1,0 +1,3 @@
+timestamp,session_id,rating,helpful,comments
+2026-05-01 18:58:00,test-fb-1,5,yes,smoke test
+2026-05-01 18:59:10,,,maybe,
