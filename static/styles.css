@@ -1,3 +1,16 @@
+/* ── Hide scrollbars globally (still scrollable) ────────── */
+html, body, * {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* legacy Edge / IE */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;               /* Chrome / Brave / Safari */
+}
+
 /* ── Design tokens ─────────────────────────────────────── */
 :root {
   --font-body: 'Inter', system-ui, sans-serif;
@@ -194,6 +207,41 @@ a, button { transition: color var(--transition), background var(--transition),
   flex-direction: column;
   gap: var(--space-4);
   scroll-behavior: smooth;
+  /* Themed scrollbar — Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-mid) transparent;
+}
+/* Themed scrollbar — Chrome / Brave / Safari (overrides global hide) */
+.chat-area::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+.chat-area::-webkit-scrollbar-track {
+  background: transparent;
+  margin-block: var(--space-3);
+}
+.chat-area::-webkit-scrollbar-thumb {
+  background: var(--color-primary-mid);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-bg);
+  background-clip: padding-box;
+  transition: background var(--transition);
+}
+.chat-area::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+  background-clip: padding-box;
+}
+.chat-area::-webkit-scrollbar-thumb:active {
+  background: var(--color-primary-hover);
+  background-clip: padding-box;
+}
+/* Hide scrollbar while the welcome screen is showing */
+.chat-area:has(> #welcome:not([style*="display: none"])) {
+  scrollbar-width: none;
+}
+.chat-area:has(> #welcome:not([style*="display: none"]))::-webkit-scrollbar {
+  display: none;
 }
 
 /* Welcome state */
