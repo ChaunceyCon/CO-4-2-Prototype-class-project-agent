@@ -1020,12 +1020,12 @@ What does actual rest look like for you? Not what you think you should do — wh
     function closeOverlay() {
       overlay.classList.remove('open');
       overlay.setAttribute('hidden', '');
-      try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) { /* ignore */ }
+      try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (e) { /* ignore */ }
     }
 
-    // First-visit detection
+    // Per-tab detection: shows once per browser tab/session.
     var seen = null;
-    try { seen = localStorage.getItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+    try { seen = sessionStorage.getItem(STORAGE_KEY); } catch (e) { /* ignore */ }
     if (!seen) openOverlay();
 
     if (helpBtn)  helpBtn.addEventListener('click', openOverlay);
