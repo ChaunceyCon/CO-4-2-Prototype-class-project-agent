@@ -2,7 +2,13 @@
   'use strict';
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let sessionId = null;
+  function newSessionId() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  }
+  let sessionId = newSessionId();
   let isWaiting = false;
 
   // ── DOM refs ───────────────────────────────────────────────────────────────
@@ -79,7 +85,7 @@
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({session_id: sessionId}),
     });
-    sessionId = null;
+    sessionId = newSessionId();
     personaSentForSession = false;
     isWaiting = false;
     forcePromptOnce = true;
